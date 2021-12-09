@@ -1,51 +1,58 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script src="https://unpkg.com/vconsole@latest/dist/vconsole.min.js"></script>
-    <script>
-      // VConsole will be exported to `window.VConsole` by default.
-      var vConsole = new window.VConsole();
-    </script>
-    <title>Web share test</title>
-    <style>
 
-    </style>
-  </head>
-  <body>
-    <p>Click Button below, have a web share try!!! </p>
-    <p><button id='share1'>Web Share!</button></p>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://unpkg.com/vconsole@latest/dist/vconsole.min.js"></script>
+  <script>
+    // VConsole will be exported to `window.VConsole` by default.
+    var vConsole = new window.VConsole();
+  </script>
+  <title>Web share test</title>
+  <style>
 
-    <div>
-      <input type="file" id='file' />
-      <label for="file"></label>
-    </div>
-    <p><button id='share2'>Share file</button></p>
+  </style>
+</head>
 
-    <p class="result1"></p>
-    <p class="result2"></p>
+<body>
+  <h1>Click Button below, have a web share try!!! </h1>
+  <h2>Web Share Text</h2>
+  <p><button id='share1'>Web Share!</button>
+    <span class="result1" />
+  </p>
 
-    <script>
-      let fileObj;
-      function handleInputChange(value) {
-        fileObj = value;
-      }
-      let shareData = {
-        title: 'WebShare',
-        text: 'I am Web Share',
-      }
+  <h2>Web Share File</h2>
+  <div>
+    <input type="file" id='file' />
+    <label for="file"></label>
+  </div>
+  <p><button id='share2'>Share file</button></p>
 
-      const btn1 = document.querySelector('#share1');
-      const btn2 = document.querySelector('#share2');
-      const file = document.querySelector('#file');
-      const resultPara1 = document.querySelector('.result1');
-      const resultPara2 = document.querySelector('.result2');
-      file.addEventListener('change', (event) => {
-        handleInputChange(event.target.files);
-      })
-      console.log(file.files);
-      btn1.addEventListener('click', () => {
+  <p class="result2"></p>
+
+  <script>
+    let fileObj;
+    function handleInputChange(value) {
+      fileObj = value;
+    }
+    let shareData = {
+      title: 'WebShare',
+      text: 'I am Web Share',
+    }
+
+    const btn1 = document.querySelector('#share1');
+    const btn2 = document.querySelector('#share2');
+    const file = document.querySelector('#file');
+    const resultPara1 = document.querySelector('.result1');
+    const resultPara2 = document.querySelector('.result2');
+    file.addEventListener('change', (event) => {
+      console.log(event);
+      handleInputChange(event.target.files);
+    })
+    console.log(file.files);
+    btn1.addEventListener('click', () => {
+      if (navigator.share) {
         navigator.share(shareData)
           .then(() =>
             resultPara1.textContent = 'shared successfully'
@@ -53,21 +60,33 @@
           .catch((e) =>
             resultPara1.textContent = 'Error: ' + e
           )
-      });
-      btn2.addEventListener('click', () => {
-        let shareFileData = {
-          title: 'WebShare',
-          text: 'I am Web Share',
-          files: fileObj,
+      } else {
+        resultPara1.innerHTML = `<span style='color: #f00'>Your device don't support Web share!!!</span>`;
+      }
+    });
+    btn2.addEventListener('click', () => {
+      let shareFileData = {
+        title: 'WebShare',
+        text: 'I am Web Share',
+        files: fileObj,
+      }
+      if (navigator.canShare) {
+        if(!fileObj) {
+          resultPara2.innerHTML = `<span style='color: #f00'>Please select a file first!!!</span>`;
+        } else {
+          navigator.share(shareFileData)
+            .then(() =>
+              resultPara2.textContent = 'shared successfully'
+            )
+            .catch((e) =>
+              resultPara2.textContent = 'Error: ' + e
+            )
         }
-        navigator.share(shareFileData)
-          .then(() =>
-            resultPara1.textContent = 'shared successfully'
-          )
-          .catch((e) =>
-            resultPara1.textContent = 'Error: ' + e
-          )
-      });
-    </script>
-  </body>
+      } else {
+        resultPara2.innerHTML = `<span style='color: #f00'>Your device don't support Web share file!!!</span>`;
+      }
+    });
+  </script>
+</body>
+
 </html>
